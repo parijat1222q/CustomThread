@@ -1,3 +1,4 @@
+
 import type { NavLink, Design, Product } from '@/types';
 import { Home, Palette, GalleryVerticalEnd, Vote, ShoppingBag, Info, User, Upload } from 'lucide-react';
 
@@ -26,10 +27,10 @@ export const MOCK_GALLERY_DESIGNS: Design[] = [
 ];
 
 export const MOCK_SHOP_PRODUCTS: Product[] = [
-  { id: 'shop1', name: 'Cosmic Dream Hoodie', imageUrl: 'https://placehold.co/600x700/4B0082/F0F0F0.png?text=Cosmic+Dream', price: 59.99, description: 'Limited edition winning design. A hoodie inspired by the vastness of space, crafted from premium materials.', category: 'Hoodies' },
-  { id: 'shop2', name: 'Cyberpunk Visionary Vest', imageUrl: 'https://placehold.co/600x700/00FFFF/000.png?text=Cyber+Vest', price: 79.99, description: 'Limited edition winning design. A futuristic vest inspired by cyberpunk aesthetics, perfect for making a statement.', category: 'Vests' },
-  { id: 'shop3', name: 'Floral Elegance Dress', imageUrl: 'https://placehold.co/600x700/FF69B4/FFF.png?text=Floral+Dress', price: 69.99, description: 'Limited edition winning design. An elegant dress adorned with delicate floral prints, ideal for special occasions.', category: 'Dresses' },
-  { id: 'shop4', name: 'Sunset Vibes Tee', imageUrl: 'https://placehold.co/600x700/8F00FF/F0F0F0.png?text=Sunset+Tee', price: 29.99, description: 'Popular community design. Capture the warmth of a sunset with this vibrant t-shirt.', category: 'T-Shirts' },
+  { id: 'shop1', name: 'Cosmic Dream Hoodie', imageUrl: 'https://placehold.co/600x700/4B0082/F0F0F0.png?text=Cosmic+Dream', price: 4799.00, description: 'Limited edition winning design. A hoodie inspired by the vastness of space, crafted from premium materials.', category: 'Hoodies' },
+  { id: 'shop2', name: 'Cyberpunk Visionary Vest', imageUrl: 'https://placehold.co/600x700/00FFFF/000.png?text=Cyber+Vest', price: 6399.00, description: 'Limited edition winning design. A futuristic vest inspired by cyberpunk aesthetics, perfect for making a statement.', category: 'Vests' },
+  { id: 'shop3', name: 'Floral Elegance Dress', imageUrl: 'https://placehold.co/600x700/FF69B4/FFF.png?text=Floral+Dress', price: 5599.00, description: 'Limited edition winning design. An elegant dress adorned with delicate floral prints, ideal for special occasions.', category: 'Dresses' },
+  { id: 'shop4', name: 'Sunset Vibes Tee', imageUrl: 'https://placehold.co/600x700/8F00FF/F0F0F0.png?text=Sunset+Tee', price: 2399.00, description: 'Popular community design. Capture the warmth of a sunset with this vibrant t-shirt.', category: 'T-Shirts' },
 ];
 
 export const HOW_IT_WORKS_STEPS = [

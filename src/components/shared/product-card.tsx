@@ -1,3 +1,4 @@
+
 "use client";
 
 import Image from 'next/image';
@@ -38,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
       <CardContent className="p-4 flex-grow">
         <CardTitle className="text-lg font-semibold mb-1">{product.name}</CardTitle>
         <CardDescription className="text-xl font-bold text-primary mb-2">
-          ${product.price.toFixed(2)}
+          ₹{product.price.toFixed(2)}
         </CardDescription>
         <p className="text-xs text-foreground/80 line-clamp-3">{product.description}</p>
       </CardContent>
