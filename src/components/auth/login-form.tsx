@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,6 +16,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { LogIn } from "lucide-react";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
+import { useRouter } from "next/navigation";
 
 const loginFormSchema = z.object({
   email: z.string().email({ message: "Please enter a valid email address." }),
@@ -24,6 +28,7 @@ const loginFormSchema = z.object({
 type LoginFormValues = z.infer<typeof loginFormSchema>;
 
 export function LoginForm() {
+  const router = useRouter();
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
@@ -32,15 +37,36 @@ export function LoginForm() {
     },
   });
 
-  function onSubmit(data: LoginFormValues) {
-    console.log("Login data:", data);
-    // Placeholder login logic
-    toast({
-      title: "Login Attempted (Demo)",
-      description: `Email: ${data.email}. Check console for data.`,
-    });
-    // In a real app, call your authentication API here.
-    // form.reset(); // Optionally reset form
+  async function onSubmit(data: LoginFormValues) {
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+      toast({
+        title: "Login Successful!",
+        description: "Welcome back!",
+      });
+      form.reset();
+      router.push('/'); // Redirect to homepage after login
+    } catch (error: any) {
+      console.error("Login error:", error);
+      let errorMessage = "An unexpected error occurred. Please try again.";
+      switch (error.code) {
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+          errorMessage = "Invalid email or password.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Please enter a valid email address.";
+          break;
+        case "auth/too-many-requests":
+          errorMessage = "Too many login attempts. Please try again later.";
+          break;
+      }
+      toast({
+        title: "Login Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -72,8 +98,8 @@ export function LoginForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" size="lg">
-          <LogIn className="mr-2 h-5 w-5" /> Login
+        <Button type="submit" className="w-full bg-primary hover:bg-primary/90 text-primary-foreground" size="lg" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? "Logging in..." : <><LogIn className="mr-2 h-5 w-5" /> Login</>}
         </Button>
       </form>
     </Form>

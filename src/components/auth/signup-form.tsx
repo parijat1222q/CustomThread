@@ -1,3 +1,4 @@
+
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -15,9 +16,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { UserPlus } from "lucide-react";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebaseConfig";
+import { upsertUserProfile } from "@/services/userService";
+import { useRouter } from "next/navigation";
 
 const signupFormSchema = z.object({
-  username: z.string().min(3, { message: "Username must be at least 3 characters." }),
+  username: z.string().min(3, { message: "Username must be at least 3 characters." }).max(30, { message: "Username must be 30 characters or less."}),
   email: z.string().email({ message: "Please enter a valid email address." }),
   password: z.string().min(6, { message: "Password must be at least 6 characters." }),
   confirmPassword: z.string(),
@@ -29,6 +34,7 @@ const signupFormSchema = z.object({
 type SignupFormValues = z.infer<typeof signupFormSchema>;
 
 export function SignupForm() {
+  const router = useRouter();
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupFormSchema),
     defaultValues: {
@@ -39,15 +45,45 @@ export function SignupForm() {
     },
   });
 
-  function onSubmit(data: SignupFormValues) {
-    console.log("Signup data:", data);
-    // Placeholder signup logic
-    toast({
-      title: "Signup Attempted (Demo)",
-      description: `Username: ${data.username}, Email: ${data.email}. Check console.`,
-    });
-    // In a real app, call your registration API here.
-    // form.reset(); // Optionally reset form
+  async function onSubmit(data: SignupFormValues) {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      if (user) {
+        // Save additional user information to Firestore
+        await upsertUserProfile(user.uid, {
+          username: data.username,
+          email: user.email!, // email is guaranteed to be here from auth
+        });
+      }
+
+      toast({
+        title: "Signup Successful!",
+        description: "Your account has been created. Welcome!",
+      });
+      form.reset();
+      router.push('/'); // Redirect to homepage after signup
+    } catch (error: any) {
+      console.error("Signup error:", error);
+      let errorMessage = "An unexpected error occurred. Please try again.";
+       switch (error.code) {
+        case "auth/email-already-in-use":
+          errorMessage = "This email address is already in use.";
+          break;
+        case "auth/invalid-email":
+          errorMessage = "Please enter a valid email address.";
+          break;
+        case "auth/weak-password":
+          errorMessage = "Password is too weak. Please choose a stronger password.";
+          break;
+      }
+      toast({
+        title: "Signup Failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    }
   }
 
   return (
@@ -105,8 +141,8 @@ export function SignupForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg">
-          <UserPlus className="mr-2 h-5 w-5" /> Create Account
+        <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" size="lg" disabled={form.formState.isSubmitting}>
+           {form.formState.isSubmitting ? "Creating account..." : <><UserPlus className="mr-2 h-5 w-5" /> Create Account</>}
         </Button>
       </form>
     </Form>
